@@ -1,26 +1,33 @@
-This is a starter template for [Ionic](http://ionicframework.com/docs/) projects.
+For Setting up the project
+1. Add plugin > ionic cordova plugin add cordova-plugin-camera
+2. npm install --save @ionic-native/camera
+3. Add Camera provider in app.module  import { Camera } from '@ionic-native/camera';
+4. Add method for taking photos
 
-## How to use this template
+import { Camera, CameraOptions } from '@ionic-native/camera';
 
-*This template does not work on its own*. The shared files for each starter are found in the [ionic2-app-base repo](https://github.com/driftyco/ionic2-app-base).
+images: Array<{src: String}>;
 
-To use this template, either create a new ionic project using the ionic node.js utility, or copy the files from this repository into the [Starter App Base](https://github.com/driftyco/ionic2-app-base).
-
-### With the Ionic CLI:
-
-Take the name after `ionic2-starter-`, and that is the name of the template to be used when using the `ionic start` command below:
-
-```bash
-$ sudo npm install -g ionic cordova
-$ ionic start myBlank blank
-```
-
-Then, to run it, cd into `myBlank` and run:
-
-```bash
-$ ionic cordova platform add ios
-$ ionic cordova run ios
-```
-
-Substitute ios for android if not on a Mac.
-
+constructor(public navCtrl: NavController, private camera: Camera) {
+  this.images = [];
+}
+takePhoto() {
+    const options: CameraOptions = {
+      quality: 80,
+      destinationType: this.camera.DestinationType.DATA_URL,
+      sourceType: this.camera.PictureSourceType.CAMERA,
+      allowEdit: false,
+      encodingType: this.camera.EncodingType.JPEG,
+      saveToPhotoAlbum: false
+    }
+    this.camera.getPicture(options).then((imageData) => {
+      // imageData is either a base64 encoded string or a file URI
+      // If it's base64:
+      let base64Image = 'data:image/jpeg;base64,' + imageData;
+      this.images.unshift({
+        src: base64Image
+      })
+    }, (err) => {
+      // Handle error
+    });
+  }
